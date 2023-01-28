@@ -11,5 +11,5 @@ To run with the sample data, use the following code in the directory:
 
 > main
 
-Documentation can be found [here](/Program%201/media/Program%201%20Overview.pdf).
+Documentation can be found [here](/Program%201/Program%201%20Overview.pdf).
 The code is provided [here](/Program%201/).
