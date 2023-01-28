@@ -8,6 +8,7 @@ A basic C++ program with functions to find the sum, mean, median, and range of a
 
 To run with the sample data, use the following code in the directory:
 > g++ -o main main.cpp
+
 > main
 
 Documentation can be found [here](/Program%201/media/Program%201%20Overview.pdf).
