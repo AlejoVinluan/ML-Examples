@@ -1,0 +1,9 @@
+
+```{r}
+setwd("./Program 2/")
+sample_data <- read.csv("data/avg_uni_cost.csv")
+```
+
+```{r}
+head(sample_data, 6)
+```
