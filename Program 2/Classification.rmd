@@ -1,9 +1,99 @@
+Alejo Vinluan & Dinesh Angadipeta
+abv210001 & dxa190032
+CS 4375.004
+02/18/2023
 
+Classification Notebook
+
+Linear models for classification work by finding a linear relationship between vectors of data.
+With the vectors of data, the program can estimate where testing data fits in the model. 
+There would be data X that can be used to predict data Y. For example, there may be a trend 
+where incomes of $200,000 and up are most likely to come from employees that have Masters degrees. 
+In the context of classification, we could use linear models to determine whether or not a person 
+could be a good candidate for a loan or not.
+
+The linear models can be good for classification since it is estimating where the test data falls
+within the provided full set of data. The example within the textbook is based on women's height
+and weight. If we added another column with 'Human' or 'Alien' and had Alien rows that suggested
+Aliens are generally over 7 foot and 275 pounds, then the model would work well for predicting
+whether or not the test data given is Human or Alien. Furthermore, linear regression is simple
+and works well for larger datasets.
+
+Using linear models for classification may not work well since linear regression is for regression
+tasks rather than classification. Classification models don't use RSS. Instead, it uses counts of
+classes in regions. Linear regression is good for predicting Y from X rather than if the Y falls
+into a certain range, given X.
+
+This code will set the working directory to "Program 2", then reading the provided CSV
+and putting in variable "used_ford_prices". This dataset gives a model, year, price, transmission,
+mileage, fuelType, tax, mpg, and engineSizes for Fords sold in the UK. 
 ```{r}
-setwd("./Program 2/")
-sample_data <- read.csv("data/avg_uni_cost.csv")
+ford_listings <- read.csv("data/ford.csv")
 ```
 
+This code will divide the set into training set and test set. The "eighty" variable will take
+a sample of eighty percent of the dataset. Then, the data will be split into "training_data" and
+"testing_data". 80% of the data will be for training and the remaining will be for testing.
 ```{r}
-head(sample_data, 6)
+eighty <- sample(c(TRUE, FALSE), nrow(ford_listings), replace=TRUE, prob=c(0.7,0.3))
+training_data  <- ford_listings[eighty, ]
+testing_data   <- ford_listings[!eighty, ]
 ```
+
+Here are 5 examples of R functions being used for data exploration.
+- head: View the first X rows of the given data
+- summary: View a quick summary of the testing data
+- mean: View the mean price of every used Ford sold in UK
+- median: View the median mileage of every used Ford sold in UK
+- sum: View the total tax price of all used Fords within the data
+```{r}
+head(training_data, 5)
+summary(training_data)
+mean(training_data$price)
+median(training_data$mileage)
+sum(training_data$tax)
+```
+
+This is how to create a scatter plot that compares a cars mileage to its price.
+```{r}
+plot(training_data$mileage, training_data$price, xlab = "Mileage", ylab = "Price")
+```
+
+Here is another example of a visual graph which is a histogram of a car's MPG.
+```{r}
+hist(training_data$mpg)
+```
+
+This chunk of code runs a logistic regression model on a car's mileage based on it's price.
+It sets a seed so that the data can be reproduced. Then, mileage is converted into a binary since
+the y-axis must be between 0 and 1. Finally, logistic regression is run and a summary is printed.
+```{r}
+set.seed(1234)
+price_binary <- ifelse(training_data$price >= mean(training_data$price), 1, 0)
+mileage <- training_data$mileage
+regression_model <- glm(mileage_binary ~ price, data = training_data, family = binomial(link = "logit"))
+summary(regression_model)
+```
+The summary states that...
+
+This chunk of code runs a naive Bayes model and outputs the summary. This model attempts to
+train the Bayes Model by using mileage in the X axis and price in the Y axis.
+```{r}
+library(e1071)
+bayes_model <- naiveBayes(training_data$price ~ training_data$mileage, data = training_data)
+```
+
+This chunk will utilize both classification models, then predict and evaluate data. 
+```{r}
+regression_prediction <- predict(regression_model, newdata = testing_data)
+bayes_prediction <- predict(bayes_model, newdata = testing_data)
+
+head(regression_prediction, n=3)
+head(bayes_prediction, n=3)
+```
+
+Both models were relatively inaccurate when utilizing mileage of a vehicle to predict price.
+The reason for this is because the data was not trained with proper context. Model is important
+when considering a used vehicle. A used Ferrari with 1000 miles will generally cost more than
+a used Ford Focus with 500 miles. The data includes the models as a column, but the column
+was not properly utilized to train the data.
