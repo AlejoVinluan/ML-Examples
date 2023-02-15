@@ -4,7 +4,7 @@ output:
   pdf_document: default
   html_notebook: default
 date: "2/8/2023"
-names(s): Dinesh Angadipeta(DXA190032), Alejo Vinluan(ABV210001)
+names(s): "Dinesh Angadipeta(DXA190032), Alejo Vinluan(ABV210001)"
 ---
 # Classification Notebook
 
@@ -39,7 +39,7 @@ This code will set the working directory to "Program 2", then reading the provid
 and putting in variable "ford_listings". This dataset gives a model, year, price, transmission,
 mileage, fuelType, tax, mpg, and engineSizes for Fords sold in the UK. 
 ```{r}
-setwd("Program 2")
+#setwd("Program 2") This line is required on my Windows device but breaks on my MacOS device.
 ford_listings <- read.csv("./data/ford.csv", stringsAsFactors=TRUE)
 # source - https://www.kaggle.com/datasets/adityadesai13/used-car-dataset-ford-and-mercedes
 ```
