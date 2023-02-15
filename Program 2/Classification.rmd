@@ -1,9 +1,14 @@
-Alejo Vinluan & Dinesh Angadipeta
-abv210001 & dxa190032
-CS 4375.004
-02/18/2023
+---
+title: "Classification Notebook"
+output:
+  pdf_document: default
+  html_notebook: default
+date: "2/8/2023"
+names(s): Dinesh Angadipeta(DXA190032), Alejo Vinluan(ABV210001)
+---
+# Classification Notebook
 
-Classification Notebook
+## How do linear models for Classification work?
 
 Linear models for classification work by finding a linear relationship between vectors of data.
 With the vectors of data, the program can estimate where testing data fits in the model. 
@@ -12,6 +17,8 @@ where incomes of $200,000 and up are most likely to come from employees that hav
 In the context of classification, we could use linear models to determine whether or not a person 
 could be a good candidate for a loan or not.
 
+### Strengths
+
 The linear models can be good for classification since it is estimating where the test data falls
 within the provided full set of data. The example within the textbook is based on women's height
 and weight. If we added another column with 'Human' or 'Alien' and had Alien rows that suggested
@@ -19,10 +26,14 @@ Aliens are generally over 7 foot and 275 pounds, then the model would work well 
 whether or not the test data given is Human or Alien. Furthermore, linear regression is simple
 and works well for larger datasets.
 
+### Weaknesses
+
 Using linear models for classification may not work well since linear regression is for regression
 tasks rather than classification. Classification models don't use RSS. Instead, it uses counts of
 classes in regions. Linear regression is good for predicting Y from X rather than if the Y falls
 into a certain range, given X.
+
+## Data Set
 
 This code will set the working directory to "Program 2", then reading the provided CSV
 and putting in variable "ford_listings". This dataset gives a model, year, price, transmission,
@@ -30,16 +41,21 @@ mileage, fuelType, tax, mpg, and engineSizes for Fords sold in the UK.
 ```{r}
 setwd("Program 2")
 ford_listings <- read.csv("./data/ford.csv", stringsAsFactors=TRUE)
+# source - https://www.kaggle.com/datasets/adityadesai13/used-car-dataset-ford-and-mercedes
 ```
+
+### Splitting the data into 80/20
 
 This code will divide the set into training set and test set. The "eighty" variable will take
 a sample of eighty percent of the dataset. Then, the data will be split into "training_data" and
 "testing_data". 80% of the data will be for training and the remaining will be for testing.
 ```{r}
-eighty <- sample(1:nrow(ford_listings), nrow(ford_listings)*0.8, replace=FALSE)
+eighty <- sample(1:nrow(ford_listings), nrow(ford_listings)*0.8, replace=FALSE) # nolint
 training_data  <- ford_listings[eighty, ]
 testing_data   <- ford_listings[-eighty, ]
 ```
+
+## 5 Examples of Built-in R functions
 
 Here are 5 examples of R functions being used for data exploration.
 - head: View the first X rows of the given data
@@ -55,15 +71,21 @@ median(training_data$mileage)
 sum(training_data$tax)
 ```
 
+## Scatter Plot
+
 This is how to create a scatter plot that compares a cars mileage to its price.
 ```{r}
 plot(training_data$mileage, training_data$price, xlab = "Mileage", ylab = "Price") #nolint
 ```
 
+## Histogram
+
 Here is another example of a visual graph which is a histogram of a car's MPG.
 ```{r}
 hist(training_data$mpg)
 ```
+
+## Logistic Regression
 
 This chunk of code runs a logistic regression model by finding the vehicle's model
 based on it's year, price, transmission, mileage, fuel type, tax, mpg, and fuel size.
@@ -91,6 +113,8 @@ accuracy. This data may be too accurate and that there is too much consistent da
 the model can have 100% accuracy rating. For example, miles per gallon is unique amongst
 vehicle models. This suggests that mpg alone could be used to predict the model.
 
+## Naive Bayes
+
 This chunk of code runs a naive Bayes model. After the model is run, it predicts a car's
 model based on it's year, price, transmission, mileage, fuel type, tax, mpg, and engine size.
 Accuracy is then calculated by comparing the prediction model's guesses with the actual
@@ -106,6 +130,8 @@ In this instance, the prediction model only had an accuracy of 44%. I believe th
 may be the case since Naive Bayes is viewing each factor as independent. This suggests
 that the model cannot reply on 1 factor, like mpg, in such a way that the logical regression
 was able to rely on mpg to make a complete prediction.
+
+## Evaluations of each model
 
 Logical regression can be strong because it's easy to use.
 I was able to train my model by simply using the glm() function. Furthermore, the only
@@ -124,6 +150,8 @@ to the real data located in the testing_data table. Naive Bayes can be weak sinc
 assumes all factors are independent. For example, price and tax are directly correlated
 within the dataset. In this instance, there should be less weight on tax or less weight on
 price since they are dependent on each other. 
+
+## Evaluation of classification metrics
 
 I used accuracy in both instances to determine how the model is doing. I was able to
 compare how many correct predictions there were out of the entire testing set and find
