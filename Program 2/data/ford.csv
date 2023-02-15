@@ -17491,7 +17491,6 @@ model,year,price,transmission,mileage,fuelType,tax,mpg,engineSize
  Fiesta,2018,10500,Manual,33760,Petrol,145,65.7,1.0
  Fiesta,2017,9000,Manual,31640,Diesel,265,78.5,1.5
  Fiesta,2016,7300,Manual,48118,Petrol,0,65.7,1.0
- Mondeo,2015,13800,Automatic,19470,Other,0,67.3,2.0
  Focus,2015,7000,Manual,78533,Diesel,0,74.3,1.5
  Focus,2009,2400,Manual,92000,Petrol,200,42.2,1.6
  Focus,2018,11400,Manual,26656,Petrol,145,57.7,1.0

@@ -25,19 +25,20 @@ classes in regions. Linear regression is good for predicting Y from X rather tha
 into a certain range, given X.
 
 This code will set the working directory to "Program 2", then reading the provided CSV
-and putting in variable "used_ford_prices". This dataset gives a model, year, price, transmission,
+and putting in variable "ford_listings". This dataset gives a model, year, price, transmission,
 mileage, fuelType, tax, mpg, and engineSizes for Fords sold in the UK. 
 ```{r}
-ford_listings <- read.csv("data/ford.csv")
+setwd("Program 2")
+ford_listings <- read.csv("./data/ford.csv")
 ```
 
 This code will divide the set into training set and test set. The "eighty" variable will take
 a sample of eighty percent of the dataset. Then, the data will be split into "training_data" and
 "testing_data". 80% of the data will be for training and the remaining will be for testing.
 ```{r}
-eighty <- sample(c(TRUE, FALSE), nrow(ford_listings), replace=TRUE, prob=c(0.7,0.3))
+eighty <- sample(1:nrow(ford_listings), nrow(ford_listings)*0.8, replace=FALSE)
 training_data  <- ford_listings[eighty, ]
-testing_data   <- ford_listings[!eighty, ]
+testing_data   <- ford_listings[-eighty, ]
 ```
 
 Here are 5 examples of R functions being used for data exploration.
@@ -56,7 +57,7 @@ sum(training_data$tax)
 
 This is how to create a scatter plot that compares a cars mileage to its price.
 ```{r}
-plot(training_data$mileage, training_data$price, xlab = "Mileage", ylab = "Price")
+plot(training_data$mileage, training_data$price, xlab = "Mileage", ylab = "Price") #nolint
 ```
 
 Here is another example of a visual graph which is a histogram of a car's MPG.
@@ -64,36 +65,29 @@ Here is another example of a visual graph which is a histogram of a car's MPG.
 hist(training_data$mpg)
 ```
 
-This chunk of code runs a logistic regression model on a car's mileage based on it's price.
-It sets a seed so that the data can be reproduced. Then, mileage is converted into a binary since
-the y-axis must be between 0 and 1. Finally, logistic regression is run and a summary is printed.
+This chunk of code runs a logistic regression model by finding the vehicle's model
+based on it's year, price, transmission, mileage, fuel type, tax, mpg, and fuel size.
+A summary is then printed about the regression model.
 ```{r}
 set.seed(1234)
-price_binary <- ifelse(training_data$price >= mean(training_data$price), 1, 0)
-mileage <- training_data$mileage
-regression_model <- glm(mileage_binary ~ price, data = training_data, family = binomial(link = "logit"))
+regression_model <- glm(training_data$model ~ ., data = training_data, family = binomial(link = "logit")) # nolint
 summary(regression_model)
 ```
-The summary states that...
+The summary states that the year, price, transmission, mileage, tax, and mpg are good
+indicators to find the whether the vehicle is a Fiesta. This is most likely because a vehicle's
+price and tax (which go hand in hand) will generally be the same of all vehicle models
+with similair mileage. Furthermore, mpg should be the same for vehicles of the
+same model.
 
-This chunk of code runs a naive Bayes model and outputs the summary. This model attempts to
-train the Bayes Model by using mileage in the X axis and price in the Y axis.
+This chunk of code runs a naive Bayes model. After the model is run, it predicts a car's
+model based on it's year, price, transmission, mileage, fuel type, tax, mpg, and engine size.
+Accuracy is then calculated by comparing the prediction model's guesses with the actual
+information within the testing data.
 ```{r}
 library(e1071)
-bayes_model <- naiveBayes(training_data$price ~ training_data$mileage, data = training_data)
+bayes_model <- naiveBayes(as.factor(training_data$model)~., data = training_data, type="class") # nolint
+prediction_model <- predict(bayes_model, newdata = testing_data)
+accuracy <- mean(prediction_model == testing_data$model)
+accuracy
 ```
-
-This chunk will utilize both classification models, then predict and evaluate data. 
-```{r}
-regression_prediction <- predict(regression_model, newdata = testing_data)
-bayes_prediction <- predict(bayes_model, newdata = testing_data)
-
-head(regression_prediction, n=3)
-head(bayes_prediction, n=3)
-```
-
-Both models were relatively inaccurate when utilizing mileage of a vehicle to predict price.
-The reason for this is because the data was not trained with proper context. Model is important
-when considering a used vehicle. A used Ferrari with 1000 miles will generally cost more than
-a used Ford Focus with 500 miles. The data includes the models as a column, but the column
-was not properly utilized to train the data.
+In this instance, the prediction model only had an accuracy of 44%.
