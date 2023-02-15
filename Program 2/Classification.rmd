@@ -29,7 +29,7 @@ and putting in variable "ford_listings". This dataset gives a model, year, price
 mileage, fuelType, tax, mpg, and engineSizes for Fords sold in the UK. 
 ```{r}
 setwd("Program 2")
-ford_listings <- read.csv("./data/ford.csv")
+ford_listings <- read.csv("./data/ford.csv", stringsAsFactors=TRUE)
 ```
 
 This code will divide the set into training set and test set. The "eighty" variable will take
@@ -79,6 +79,18 @@ price and tax (which go hand in hand) will generally be the same of all vehicle 
 with similair mileage. Furthermore, mpg should be the same for vehicles of the
 same model.
 
+```{r}
+predicted <- predict(regression_model, newdata = testing_data, type = "response") #nolint
+test_matrix <- table(testing_data$model, predicted > 0.5)
+sum(test_matrix)
+colSums(test_matrix)
+```
+This model shows that after attempting to predict the model, there are 3593 total values
+from the testing data. Of the 3593 values, 3592 are are correct. This suggests a 99.9%
+accuracy. This data may be too accurate and that there is too much consistent data that
+the model can have 100% accuracy rating. For example, miles per gallon is unique amongst
+vehicle models. This suggests that mpg alone could be used to predict the model.
+
 This chunk of code runs a naive Bayes model. After the model is run, it predicts a car's
 model based on it's year, price, transmission, mileage, fuel type, tax, mpg, and engine size.
 Accuracy is then calculated by comparing the prediction model's guesses with the actual
@@ -90,4 +102,32 @@ prediction_model <- predict(bayes_model, newdata = testing_data)
 accuracy <- mean(prediction_model == testing_data$model)
 accuracy
 ```
-In this instance, the prediction model only had an accuracy of 44%.
+In this instance, the prediction model only had an accuracy of 44%. I believe this
+may be the case since Naive Bayes is viewing each factor as independent. This suggests
+that the model cannot reply on 1 factor, like mpg, in such a way that the logical regression
+was able to rely on mpg to make a complete prediction.
+
+Logical regression can be strong because it's easy to use.
+I was able to train my model by simply using the glm() function. Furthermore, the only
+trouble I had with logical regression was converting each Ford Model into a factor.
+That's because logical regression would not initially accept strings as valid for
+classification. Logical regression can be weak since it can be reliant on certain
+factors to determine the overall prediction. In the instance above, I suspect that
+the 99.9% accuracy rating was because it was relying on numbers unique to each vehicle.
+The mpg is unique, so logical regression can rely on those factors.
+
+Naive Bayes can be strong since I was easily able to use it without having to
+convert the categorical data into numbers. In logical regression, I had to convert each
+string into factors. I was able to avoid this in the Naive Bayes approach. Furthermore,
+checking the accuracy of the data was simple as all I needed to do was compare each prediction
+to the real data located in the testing_data table. Naive Bayes can be weak since it
+assumes all factors are independent. For example, price and tax are directly correlated
+within the dataset. In this instance, there should be less weight on tax or less weight on
+price since they are dependent on each other. 
+
+I used accuracy in both instances to determine how the model is doing. I was able to
+compare how many correct predictions there were out of the entire testing set and find
+that the models had accuracies of 99% and 44%, respectively. This classification metric
+may not be the best since it only shows what the model predicted correctly. If the model
+had a 50% chance of guessing correctly, the accuracy would significantly change.
+
