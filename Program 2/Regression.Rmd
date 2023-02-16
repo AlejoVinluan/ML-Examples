@@ -1,0 +1,204 @@
+---
+title: "Regression"
+output:
+  pdf_document: default
+  html_notebook: default
+date: "2/8/2023"
+names(s): Dinesh Angadipeta(DXA190032), Alejo Vinluan(ABV210001)
+---
+
+### What is Linear Regression?
+
+Linear regression is a measure that takes multiple independent and dependent variables and creates a model of their relationship in the form of a linear relationship. This is represented by a equation that is calculated, and can be used to make further predictions and estimates based off the relationship.
+
+The strengths of linear regression is that it is a very easy way to interpret the relationship between multiple variables. It is very easy to understand in graph form as well, and can be used to make reasonable predictions.
+
+The weaknesses of linear regression lies in the existence of outliers. Not every data set is has a clean set of data, and with outliers comes skewed data at times. Linear regression is very sensitive to outliers at times, and this could lead to future predictions being slightly off at times.
+
+# Data set
+
+```{r}
+data <- read.csv("melb_data.csv")
+```
+
+For this notebook we will be using the data set of 2017 Melbourne housing prices/sales. The source for the original Kaggle page of the data set is [here](https://www.kaggle.com/datasets/dansbecker/melbourne-housing-snapshot). The code segment above reads the data set in.
+
+```{r}
+set.seed(1)
+sample <- sample(c(TRUE, FALSE), nrow(data), replace=TRUE, prob=c(0.8,0.2))
+train  <- data[sample, ]
+test   <- data[!sample, ]
+dim(train)
+dim(test)
+```
+
+Here we are dividing into a 80/20 train/test.
+
+## Data Exploration
+
+#### names function
+
+```{r}
+names(train)
+```
+
+Here we are listing the names of the variables in the data set. This helps plan out what variables will be useful for data exploration.
+
+#### str function
+
+```{r}
+str(train)
+```
+
+Here we are using the "str" function to see how the data set is structured.
+
+#### colSums function using is.na
+
+```{r}
+colSums(is.na(train))
+```
+
+Here we are looking at the number of missing values in each of the variables of the data set. This can cause problems with the missing data values, so we can replace all the missing values with the mean values of the columns to make the data calculations a little more accurate.
+
+```{r}
+test$Car[is.na(test$Car)]<-mean(test$Car,na.rm=TRUE)
+test$YearBuilt[is.na(test$YearBuilt)]<-mean(test$YearBuilt,na.rm=TRUE)
+train$Car[is.na(train$Car)]<-mean(train$Car,na.rm=TRUE)
+train$YearBuilt[is.na(train$YearBuilt)]<-mean(train$YearBuilt,na.rm=TRUE)
+```
+
+#### dim function
+
+```{r}
+dim(train)
+```
+
+As used before when creating the test and training data, the dim function helps how the number of rows and columns.
+
+#### head function
+
+```{r}
+head(train)
+```
+
+The head function helps look at the first 6 rows.
+
+#### summary function
+
+```{r}
+summary(train)
+```
+
+This function gives an overview of the statistics of each variable.
+
+## Informative Graphs
+
+```{r}
+options(scipen=5)
+hist(train$Distance, main = "House Distance from Central Business District", xlab = "Distance in Kilometers")
+```
+
+This graph shows how many houses are located at certain distances from the Central Business District in Melbourne.
+
+```{r}
+options(scipen=5)
+plot(train$Distance, train$Price)
+```
+
+This graph shows how the house price relates to the distance from the Central Business District.
+
+## Linear Regression Model
+
+```{r}
+lm1 <- lm(Price~Distance, data = train)
+summary(lm1)
+```
+
+This code segment builds a simple linear regression model. For linear regression, the parameters can be defined by w and b, where w stands for the slope of the line and b stands for the intercept. Here w = -17456 and b = 1250032. So that means that for every kilometer increase in away from the Central Business District, a house in Melbourne drops around \$17,456 in value on average. The intercept helps show that the average price of a house located at the Central Business District is around \$1,250,032. Looking at the linear regression values, we can actually see some problems. For example, the R-squared statistic is quite far from the value 1, showing that this may not have that strong of a correlation. The RSE shows that the model is about 631200 y units off, which is still pretty big despite the relatively large scale of the numbers used in the data. The p-value is low, which does show some signs of it being a decent model. All in all, this model may need some more variables to help find a better correlation.
+
+### Residual Plot
+
+```{r}
+lm1 <- lm(Price~Distance, data = train)
+ 
+plot(lm1)
+ 
+```
+
+###### Residuals vs Fitted
+
+The Residual vs Fitted plot shows no distinct patterns, so it is a good indication that there aren't non-linear relationships.
+
+###### Normal Q-Q
+
+The Normal Q-Q plot isn't an exact perfect line and it skews lightly upward near the end. The residuals are generally normally distributed here, but problems could arise around #9576, #7693, and #12095.
+
+###### Scale-Location
+
+The Scale-Location plot shows a about horizontal line with around equal residuals on either side. This shows that the residuals are spread about equally along the ranges of the predictors.
+
+###### Residuals vs Leverage
+
+Since the Residuals vs Leverage plot barely shows the Cook's distance, there are not many influential outliers that will truly skew and affect the data.
+
+## Multiple Linear Regression Models
+
+###### Using Distance and YearBuilt as predictors.
+
+```{r}
+lm2 <- lm(Price~Distance+YearBuilt, data = train)
+summary(lm2)
+```
+
+###### Using Rooms, Bathroom, Distance, Car, YearBuilt, Landsize, Propertycount, and Bedroom2 as predictors
+
+```{r}
+lm3 <- lm(Price~Bedroom2+Rooms+Bathroom+Distance+Car+YearBuilt+Propertycount+Landsize, data = train)
+summary(lm3)
+```
+
+##### Findings:
+
+As we can see, all 3 of the models bring very different summaries to the table. The linear model using only Distance as a predictor showed poor correlation statistics, showcasing that the distance from the Central Business District in Melbourne was not the best predictor for house prices in the area, and that it needed more. In the multiple linear regression model using only Distance and the YearBuilt variables, it is seen that even just these two variables yield a poor correlation result, even though it showed a better correlation than the linear model using a single predictor, showcasing that the housing market of Melbourne is affected by many more variables added together. Finally, the third linear regression model showcasing the use of Rooms, Bathroom, Distance, Car, YearBuilt, Landsize, Propertycount, and Bedroom2 yielded a drastically better result, having an R-squared value of 0.4369 which is the best of all the models. This ultimately shows that the housing market of Melbourne is not dominated by certain factors, and only shows a correlation when factoring all the important statistics together. All in all the third linear regression model is the best on to use, with a lower RSE, and higher R-squared value.
+
+## Predictions
+
+##### Predictions for 1st linear model
+
+```{r}
+pred <- predict(lm1, newdata = test)
+correlation <- cor(pred, test$Distance) 
+print(paste("correlation:", correlation)) 
+mse <- mean((pred-test$Distance)^2) 
+print(paste("mse:",mse)) 
+rmse<-sqrt(mse) 
+print(paste("rmse:",rmse))
+```
+
+##### Predictions for 2nd linear model
+
+```{r}
+pred <- predict(lm2, newdata = test)
+correlation <- cor(pred, test$Distance+test$YearBuilt) 
+print(paste("correlation:", correlation)) 
+mse <- mean((pred-(test$Distance+test$YearBuilt))^2) 
+print(paste("mse:",mse)) 
+rmse<-sqrt(mse) 
+print(paste("rmse:",rmse))
+```
+
+##### Predictions for 3rd linear model
+
+```{r}
+pred <- predict(lm3, newdata = test)
+correlation <- cor(pred, test$Bedroom2+test$Rooms+test$Bathroom+test$Distance+test$Car+test$YearBuilt+test$Propertycount+test$Landsize) 
+print(paste("correlation:", correlation)) 
+mse <- mean((pred-(test$Bedroom2+test$Rooms+test$Bathroom+test$Distance+test$Car+test$YearBuilt+test$Propertycount+test$Landsize))^2) 
+print(paste("mse:",mse)) 
+rmse<-sqrt(mse) 
+print(paste("rmse:",rmse))
+```
+
+#### Conclusion
+
+From the shown predictions, it can be seen that the first 2 linear models show a large negative correlation. Despite that, the third linear model shows a very weak negative correlation. The reason why the third linear model could show a weak negative correlation could be due to the fact that some of the factors used had opposing affects on other factors. Conflicting correlations caused the correlation to ultimately level our. The high rmse could be a byproduct of the very high price values used in the data.
