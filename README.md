@@ -13,3 +13,8 @@ To run with the sample data, use the following code in the directory:
 
 Documentation can be found [here](/Program%201/Program%201%20Overview.pdf).
 The code is provided [here](/Program%201/).
+
+## Program 2
+2 basic programs that explore Linear Regression. Classification and Regression models are used with basic Linear Regression models to predict certain outcomes.
+
+The code is provided [here](/Program%202/).
