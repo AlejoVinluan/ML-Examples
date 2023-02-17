@@ -2,11 +2,12 @@
 title: "Classification Notebook"
 output:
   pdf_document: default
-  html_notebook: default
 date: "2/8/2023"
 names(s): "Dinesh Angadipeta(DXA190032), Alejo Vinluan(ABV210001)"
 ---
 # Classification Notebook
+## Dinesh Angadipeta(DXA190032), Alejo Vinluan(ABV210001)
+## 2/8/2023
 
 ## How do linear models for Classification work?
 
@@ -75,14 +76,14 @@ sum(training_data$tax)
 
 This is how to create a scatter plot that compares a cars mileage to its price.
 ```{r}
-plot(training_data$mileage, training_data$price, xlab = "Mileage", ylab = "Price") #nolint
+plot(training_data$mileage, training_data$price, xlab = "Mileage", ylab = "Price", main="Used Ford Price vs Mileage") #nolint
 ```
 
 ## Histogram
 
 Here is another example of a visual graph which is a histogram of a car's MPG.
 ```{r}
-hist(training_data$mpg)
+hist(training_data$mpg, main='MPG of Different Used Fords')
 ```
 
 ## Logistic Regression
@@ -126,7 +127,7 @@ prediction_model <- predict(bayes_model, newdata = testing_data)
 accuracy <- mean(prediction_model == testing_data$model)
 accuracy
 ```
-In this instance, the prediction model only had an accuracy of 44%. I believe this
+In this instance, the prediction model only had an accuracy of 41.9%. I believe this
 may be the case since Naive Bayes is viewing each factor as independent. This suggests
 that the model cannot reply on 1 factor, like mpg, in such a way that the logical regression
 was able to rely on mpg to make a complete prediction.
@@ -155,7 +156,7 @@ price since they are dependent on each other.
 
 I used accuracy in both instances to determine how the model is doing. I was able to
 compare how many correct predictions there were out of the entire testing set and find
-that the models had accuracies of 99% and 44%, respectively. This classification metric
+that the models had accuracies of 99% and 41.9%, respectively. This classification metric
 may not be the best since it only shows what the model predicted correctly. If the model
 had a 50% chance of guessing correctly, the accuracy would significantly change.
 

@@ -2,10 +2,12 @@
 title: "Regression"
 output:
   pdf_document: default
-  html_notebook: default
 date: "2/8/2023"
-names(s): Dinesh Angadipeta(DXA190032), Alejo Vinluan(ABV210001)
+names(s): "Dinesh Angadipeta(DXA190032), Alejo Vinluan(ABV210001)"
 ---
+# Regression Notebook
+## Dinesh Angadipeta(DXA190032), Alejo Vinluan(ABV210001)
+## 2/8/2023
 
 ### What is Linear Regression?
 
