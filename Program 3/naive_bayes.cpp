@@ -1,16 +1,39 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <vector>
+#include <math.h>
 using namespace std;
 
-// Length of the titanic project csv
-const int titanicProjectLength = 1046;
+// Basic structure of passenger to store in data vector
+struct passenger {
+    int pClass;
+    int survived;
+    int sex;
+    int age;
+};
 
-// Global variables to store values
-double pClass[titanicProjectLength];
-double survived[titanicProjectLength];
-double sex[titanicProjectLength];
-double age[titanicProjectLength];
+
+class NaiveBayes{
+private:
+    vector<passenger> train;
+    vector<passenger> test;
+
+public:
+    NaiveBayes(vector<passenger> _train, vector<passenger> _test){
+        train = _train;
+        test = _test;
+    }
+
+    void hello() {
+        cout << "Hello!" << endl;
+    }
+
+};
+
+
+// Basic data vector
+vector<passenger> data;
 
 int readFile(string file_path){
     ifstream file(file_path);
@@ -26,7 +49,6 @@ int readFile(string file_path){
     while(getline(file, line)){
         // Ignore CSV Header
         if(csvIndex == 0){
-            cout << line << endl;
             csvIndex++;
             continue;
         }
@@ -35,26 +57,29 @@ int readFile(string file_path){
         stringstream ss(line);
         
         string currVal;
+        passenger temp;
         
         // Ignore the first value which is "person id"
         getline(ss, currVal, ',');
 
-        // Beging converting values to doubles and storing in global arrays
+        // Begin converting values to int and storing in global arrays
         getline(ss, currVal, ',');
-        pClass[csvIndex-1] = stod(currVal);
+        temp.pClass = stoi(currVal);
         getline(ss, currVal, ',');
-        survived[csvIndex-1] = stod(currVal);
+        temp.survived = stoi(currVal);
         getline(ss, currVal, ',');
-        sex[csvIndex-1] = stod(currVal);
+        temp.sex = stoi(currVal);
         getline(ss, currVal, ',');
-        age[csvIndex-1] = stod(currVal);
-
+        temp.age = int(round(stod(currVal)));
+        data.push_back(temp);
         csvIndex++;
     }
+
     // Close file and continue
     file.close();
     return 0;
 }
+
 
 int main(int argc, char *argv[]){
     // File checking to ensure there is a file in command line
@@ -66,5 +91,13 @@ int main(int argc, char *argv[]){
 
     // Read the file
     readFile(argv[1]);
+
+    // Training vector of the first 800 entries
+    vector<passenger> trainingData(data.begin(), data.begin()+800);
+    vector<passenger> testingData(data.begin()+800, data.end());
+
+    NaiveBayes nb(trainingData, testingData);
+    nb.hello();
+
     return 0;
 }
