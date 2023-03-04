@@ -95,7 +95,7 @@ public:
             }
         }
         ageVariance[0] = perishedSum / (perished - 1);
-        ageVariance[1] = survivedSum / (perished - 1);
+        ageVariance[1] = survivedSum / (survived - 1);
         age[0][1] = sqrt(ageVariance[0]);
         age[1][1] = sqrt(ageVariance[1]);
     }
