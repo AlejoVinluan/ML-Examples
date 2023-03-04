@@ -4,6 +4,7 @@
 #include <vector>
 #include <math.h>
 #include <array>
+#include <chrono>
 using namespace std;
 
 // Basic structure of passenger to store in data vector
@@ -164,38 +165,49 @@ public:
         int passSex = p.sex;
         int passAge = p.age;
 
-        double probabilityPerished = pClass[0][passClass] * sex[0][passSex] * survivedProbability[0] * calcAgeLikelihood(passAge, age[0][0], age[0][1]);
-        double probabilitySurvived = pClass[1][passClass] * sex[1][passSex] * survivedProbability[1] * calcAgeLikelihood(passAge, age[1][0], age[1][1]);
-        double denominator = pClass[0][passClass] * sex[0][passSex] * survivedProbability[0] * calcAgeLikelihood(passAge, age[0][0], age[0][1]) + pClass[1][passClass] * sex[1][passSex] * survivedProbability[1] * calcAgeLikelihood(passAge, age[1][0], age[1][1]);
+        double probabilityPerished = pClass[0][passClass] * sex[0][passSex] * survivedProbability[0] * calcAgeLikelihood(passAge, age[0][0], ageVariance[0]);
+        double probabilitySurvived = pClass[1][passClass] * sex[1][passSex] * survivedProbability[1] * calcAgeLikelihood(passAge, age[1][0], ageVariance[1]);
+        double denominator = pClass[0][passClass] * sex[0][passSex] * survivedProbability[0] * calcAgeLikelihood(passAge, age[0][0], ageVariance[0]) + pClass[1][passClass] * sex[1][passSex] * survivedProbability[1] * calcAgeLikelihood(passAge, age[1][0], ageVariance[1]);
         return {probabilityPerished / denominator, probabilitySurvived / denominator};
     }
 
-    double testData() {
-        cout << "AGE ARRAY" << endl;
-        cout << age[0][0] << " " << age[0][1] << endl;
-        cout << age[1][0] << " " << age[1][1] << endl;
-        cout << "P CLASS" << endl;
-        cout << pClass[0][1] << " " << pClass[0][2]<< " " << pClass[0][3] << endl;
-        cout << pClass[1][1] << " " << pClass[1][2]<< " " << pClass[1][3] << endl;
-        cout << "SEX" << endl;
-        cout << sex[0][0] << " " << sex[0][1] << endl;
-        cout << sex[1][0] << " " << sex[1][1] << endl;
-        cout << "APRIORI" << endl;
-        cout << survivedProbability[0] << " " << survivedProbability[1] << endl;
-        int correct = 0;
+    void testData(){
+        /*
+        TP - Correctly predicted somebody survived
+        FP - Incorrectly predicted survival
+        FN - Incorrectly predicted perish
+        TN - Correct predicted perish
+        */
+        int TP = 0;
+        int FP = 0;
+        int FN = 0;
+        int TN = 0;
+
         for(int i = 0; i < test.size(); i++){
             array<double, 2> rawProbability = calcRawProbability(test[i]);
+            // Predicts death
             if(rawProbability[0] > rawProbability[1]){
+                // Correctly predicts death
                 if(test[i].survived == 0){
-                    correct++;
+                    TN++;
+                } else {
+                    FN++;
                 }
             } else {
                 if(test[i].survived == 1){
-                    correct++;
+                    TP++;
+                } else {
+                    FP++;
                 }
             }
         }
-        return correct / (double)test.size();
+        double accuracy = (TP + TN) / (double)(TP + TN + FP + FN);
+        double sensitivity = TP / (double)(TP + FN);
+        double specificity = TN / (double)(TN + FP);
+
+        cout << "Accuracy: " << accuracy * 100 << "%" << endl;
+        cout << "Sensitivity: " << sensitivity * 100 << "%" << endl;
+        cout << "Specificity: " << specificity * 100 << "%" << endl;
     }
 
 };
@@ -251,6 +263,7 @@ int readFile(string file_path){
 
 
 int main(int argc, char *argv[]){
+    auto startTime = chrono::high_resolution_clock::now();
     // File checking to ensure there is a file in command line
     if(argc < 2){
         cout << "No file found in command line parameters.\n"; 
@@ -267,7 +280,9 @@ int main(int argc, char *argv[]){
 
     NaiveBayes nb(trainingData, testingData);
     nb.trainData();
-    cout << nb.testData() << endl;
-
+    nb.testData();
+    auto endTime = chrono::high_resolution_clock::now();
+    chrono::duration<double> totalTime = endTime - startTime;
+    cout << "Total runtime: " << totalTime.count() << " seconds" << endl;
     return 0;
 }
