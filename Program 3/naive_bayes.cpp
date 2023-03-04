@@ -307,10 +307,6 @@ int main(int argc, char *argv[]){
     vector<passenger> testingData(passengerData.begin()+800, passengerData.end());
     NaiveBayes nb(trainingData, testingData);
     nb.trainData();
-<<<<<<< Updated upstream
-=======
-    // Keep track of training time
->>>>>>> Stashed changes
     auto endTime = chrono::high_resolution_clock::now();
     chrono::duration<double> totalTime = endTime - startTime;
     cout << "Total Training Time: " << totalTime.count() << " seconds" << endl;
