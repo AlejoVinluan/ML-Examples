@@ -1,3 +1,11 @@
+//============================================================================
+// Name        : naive_bayes.cpp
+// Author      : Alejo Vinluan abv210001
+// Version     :
+// Copyright   : 
+// Description : Naive Bayes from Scratch in C++
+//============================================================================
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -16,17 +24,26 @@ struct passenger {
 };
 
 
+// Naive Bayes Class
 class NaiveBayes{
 private:
+    // Training and testing data stored here
     vector<passenger> train;
     vector<passenger> test;
+    // Total number of survived and perished
     int survived;
     int perished;
+    // Apriori
     double survivedProbability[2];
+    // Average age of survivor and perished
     double ageMean[2];
+    // Variance of age by survivor and perished
     double ageVariance[2];
+    // Likelihood of survival by class
     double pClass[2][4];
+    // Likelihood of survival by sex
     double sex[2][2];
+    // Age average of survival and standard deviation
     double age[2][2];
     
 public:
@@ -35,6 +52,7 @@ public:
         test = _test;
     }
 
+    // Calculates the total number of perished and survived
     void findSurvived(){
         int total = 0;
         for(int i = 0; i < train.size(); i++){
@@ -48,6 +66,7 @@ public:
         survivedProbability[1] = survived / (double)train.size();
     }
 
+    // Finds the average age of survivor and perished
     void findAgeMean(){
         int agePerished = 0;
         int ageSurvived = 0;
@@ -64,6 +83,7 @@ public:
         age[1][0] = ageMean[1];
     }
 
+    // Vinds variance and standard deviation of age
     void findAgeVar(){
         double survivedSum = 0;
         double perishedSum = 0;
@@ -80,6 +100,7 @@ public:
         age[1][1] = sqrt(ageVariance[1]);
     }
 
+    // Creates the likelihood tables 
     void findProbabilities(){
         int perishedFemale = 0;
         int perishedMale = 0;
@@ -94,6 +115,7 @@ public:
         int threeClassSurvived = 0;
 
 
+        // Counts total amounts of each class and sex per person by whether or not they survived
         for(int i = 0; i < train.size(); i++){
             passenger currPassenger = train[i];
             if(currPassenger.survived == 0){
@@ -148,6 +170,7 @@ public:
         sex[1][1] = survivedMale / (double)(survivedFemale + survivedMale);
     }
 
+    // Driver code
     void trainData() {
         findSurvived();
         findAgeMean();
@@ -155,11 +178,13 @@ public:
         findProbabilities();
     }
 
+    // Calculates likelood of age from age, average, and variance
     double calcAgeLikelihood(double age, double mean, double var){
         double pi = atan(1)*4;
         return 1 / sqrt(2 * pi * var) * exp(-1*(pow(mean,2)/(2*var)));
     }
 
+    // Creates a probability array of survival and perish
     array<double, 2> calcRawProbability(passenger p){
         int passClass = p.pClass;
         int passSex = p.sex;
@@ -183,6 +208,7 @@ public:
         int FN = 0;
         int TN = 0;
 
+        // Create survival vector for each passenger
         for(int i = 0; i < test.size(); i++){
             array<double, 2> rawProbability = calcRawProbability(test[i]);
             // Predicts death
@@ -201,6 +227,7 @@ public:
                 }
             }
         }
+        // Calculate accuracy, sensitivity, and specificity
         double accuracy = (TP + TN) / (double)(TP + TN + FP + FN);
         double sensitivity = TP / (double)(TP + FN);
         double specificity = TN / (double)(TN + FP);
@@ -276,10 +303,14 @@ int main(int argc, char *argv[]){
 
     // Training vector of the first 800 entries
     vector<passenger> trainingData(passengerData.begin(), passengerData.begin()+800);
+    // Testing data for the final entries
     vector<passenger> testingData(passengerData.begin()+800, passengerData.end());
-
     NaiveBayes nb(trainingData, testingData);
     nb.trainData();
+<<<<<<< Updated upstream
+=======
+    // Keep track of training time
+>>>>>>> Stashed changes
     auto endTime = chrono::high_resolution_clock::now();
     chrono::duration<double> totalTime = endTime - startTime;
     cout << "Total Training Time: " << totalTime.count() << " seconds" << endl;
