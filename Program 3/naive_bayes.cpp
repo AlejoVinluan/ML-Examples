@@ -280,9 +280,9 @@ int main(int argc, char *argv[]){
 
     NaiveBayes nb(trainingData, testingData);
     nb.trainData();
-    nb.testData();
     auto endTime = chrono::high_resolution_clock::now();
     chrono::duration<double> totalTime = endTime - startTime;
-    cout << "Total runtime: " << totalTime.count() << " seconds" << endl;
+    cout << "Total Training Time: " << totalTime.count() << " seconds" << endl;
+    nb.testData();
     return 0;
 }
