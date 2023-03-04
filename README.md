@@ -18,3 +18,8 @@ The code is provided [here](/Program%201/).
 2 basic programs that explore Linear Regression. Classification and Regression models are used with basic Linear Regression models to predict certain outcomes.
 
 The code is provided [here](/Program%202/).
+
+## Program 3
+This directory holds 2 files that implement Machine Learning algorithms from scratch. Logical Regression and the Naive Bayes Classification algorithms are both implemented from scratch in C++ so as to understand the inner workings of both algorithms. The files will print out the accuracy, sensitivity, and specificity of each algorithm. These algorithms utilize a dataset of Titanic passengers and attempts to predict whether or not each passenger survives utilizing their Ticket Class, Age, and Sex.
+
+The code is provided [here](/Program$203/).
