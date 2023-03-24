@@ -1,0 +1,60 @@
+---
+title: "Classification Notebook"
+output:
+  pdf_document: default
+date: "3/23/2023"
+names(s): "Alejo Vinluan(ABV210001)"
+---
+
+# Searching for Similarity - Classification
+## Overview
+This R Notebook will explore Classification utilizing a loan dataset. The dataset will attempt to predict whether or not an applicant was approved or declined for the loan. The following notebook will utilize Logistic Regression, kNN, and Decision Trees as different models for prediction. Comparisons will be made after each model is utilized and an analysis about why each model produced their results. 
+
+## Dataset Breakdown
+LendingClub released the following dataset that breaks down whether or not an individual was approved for a loan. The columns of the dataset are:
+* credit.policy - If the applicant was approved for a loan
+* purpose - The purpose of the loan
+* int.rate - The interest rate of the loan the applicant is judged by
+* installment - The monthly rate of the loan if the applicant is approved
+* log.annual.inc - Log of the annual income of the applicant
+* dti - The debt-to-income ratio of the applicant
+* fico - The FICO credit score of the applicant
+* days.with.cr.line - The number of days the applicant has had a credit line
+* revol.bal - The borrower's revolving balance (unpaid amount at the end of each credit card cycle)
+* revol.util - The borrower's revolving line utilization rate (unpaid percentage of used credit vs. total credit)
+* inq.last.6mnths - The amount of hard inqiuries the applicant has had in the past 6 months
+* delinq.2yrs - The number of times the applicant has had a deliquent payment in the last 2 years
+* pub.rec - The number of times the applicant has had poor financial records (bankruptcy, tax lien, judgements)
+
+The following data will be split into 80% train and 20% test.
+
+## Load Dataset
+```{r}
+# Load the dataset
+setwd("Program 4")
+loan_data <- read.csv("./data/loan_data.xls", stringsAsFactors=TRUE) #nolint
+# source: https://www.kaggle.com/datasets/itssuru/loan-data
+
+# Split the data for 80% train and 20% test
+eighty <- sample(1:nrow(loan_data), nrow(loan_data)*0.8, replace=FALSE) # nolint
+train  <- loan_data[eighty, ]
+test   <- loan_data[-eighty, ]
+```
+
+Here is an example of the first 3 rows of this dataset:
+```{r}
+head(loan_data, 3)
+```
+
+## Data Exploration
+This is a view of the summary of the dataset.
+```{r}
+summary(loan_data)
+```
+Statistics that are dervied from summary are that:
+* 80.5% of applicants are approved for their loan
+* The average interest rate is 12.26%
+* The median credit score of the applicants is 707
+* The average 12.6% debt-to-income rate suggests that each applicant has 12.6% of the value of their income as debt
+
+## Data Visualization

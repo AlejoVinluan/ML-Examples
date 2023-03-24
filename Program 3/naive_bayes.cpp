@@ -231,7 +231,7 @@ public:
         double accuracy = (TP + TN) / (double)(TP + TN + FP + FN);
         double sensitivity = TP / (double)(TP + FN);
         double specificity = TN / (double)(TN + FP);
-
+        cout << TP << " " << FP << " " << TP + FP << endl;
         cout << "Accuracy: " << accuracy * 100 << "%" << endl;
         cout << "Sensitivity: " << sensitivity * 100 << "%" << endl;
         cout << "Specificity: " << specificity * 100 << "%" << endl;
