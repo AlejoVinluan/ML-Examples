@@ -5,6 +5,7 @@ output:
 date: "3/23/2023"
 names(s): "Alejo Vinluan(ABV210001)"
 ---
+### Alejo Vinluan (abv210001)
 
 # Searching for Similarity - Classification
 ## Overview
@@ -12,31 +13,44 @@ This R Notebook will explore Classification utilizing a loan dataset. The datase
 
 ## Dataset Breakdown
 LendingClub released the following dataset that breaks down whether or not an individual was approved for a loan. The columns of the dataset are:
+
 * credit.policy - If the applicant was approved for a loan
+
 * purpose - The purpose of the loan
+
 * int.rate - The interest rate of the loan the applicant is judged by
+
 * installment - The monthly rate of the loan if the applicant is approved
+
 * log.annual.inc - Log of the annual income of the applicant
+
 * dti - The debt-to-income ratio of the applicant
+
 * fico - The FICO credit score of the applicant
+
 * days.with.cr.line - The number of days the applicant has had a credit line
+
 * revol.bal - The borrower's revolving balance (unpaid amount at the end of each credit card cycle)
+
 * revol.util - The borrower's revolving line utilization rate (unpaid percentage of used credit vs. total credit)
-* inq.last.6mnths - The amount of hard inqiuries the applicant has had in the past 6 months
-* delinq.2yrs - The number of times the applicant has had a deliquent payment in the last 2 years
+
+* inq.last.6mnths - The amount of hard inquiries the applicant has had in the past 6 months
+
+* delinq.2yrs - The number of times the applicant has had a delinquent payment in the last 2 years
+
 * pub.rec - The number of times the applicant has had poor financial records (bankruptcy, tax lien, judgements)
+
 
 The following data will be split into 80% train and 20% test.
 
 ## Load Dataset
 ```{r}
 # Load the dataset
-#setwd("Program 4")
-loan_data <- read.csv("./data/loan_data.xls", stringsAsFactors=TRUE) #nolint
+loan_data <- read.csv("./data/loan_data.xls", stringsAsFactors=TRUE) 
 # source: https://www.kaggle.com/datasets/itssuru/loan-data
 
 # Split the data for 80% train and 20% test
-eighty <- sample(1:nrow(loan_data), nrow(loan_data)*0.8, replace=FALSE) # nolint
+eighty <- sample(1:nrow(loan_data), nrow(loan_data)*0.8, replace=FALSE) 
 train  <- loan_data[eighty, ]
 test   <- loan_data[-eighty, ]
 ```
@@ -52,41 +66,45 @@ This is a view of the summary of the dataset.
 summary(loan_data)
 ```
 Statistics that are dervied from summary are that:
+
 * 80.5% of applicants are approved for their loan
+
 * The average interest rate is 12.26%
+
 * The median credit score of the applicants is 707
+
 * The average 12.6% debt-to-income rate suggests that each applicant has 12.6% of the value of their income as debt
 
 ## Data Visualization
 This will show some relationships within the dataset. First, there is a relationship between an applicant's projected interest rate and their credit score. This is inversely related since a higher credit score generally leads to lower interest rates.
 ```{r}
 # Create scatter plot
-plot(loan_data$fico,loan_data$int.rate, xlab="FICO Credit Score", ylab="Interest Rate") #nolint
+plot(loan_data$fico,loan_data$int.rate, xlab="FICO Credit Score", ylab="Interest Rate") 
 # Create regression line
-abline(lm(loan_data$int.rate ~ loan_data$fico), col="red") #nolint
+abline(lm(loan_data$int.rate ~ loan_data$fico), col="red") 
 ```
 There are outliers within the data, but the regression line shows a clear decrease in interest rate as credit score increases.
 
 Another relationship within the dataset is the relationship between annual income and days with a credit line. The data suggests that applicants with a higher income generally have had longer days with a credit line.
 ```{r}
-plot(loan_data$log.annual.inc, loan_data$days.with.cr.line, xlab="Annual Income (log)", ylab="Days with Credit Line") #nolint
+plot(loan_data$log.annual.inc, loan_data$days.with.cr.line, xlab="Annual Income (log)", ylab="Days with Credit Line") 
 # Create regression line
-abline(lm(loan_data$days.with.cr.line ~ loan_data$log.annual.inc), col="red") #nolint
+abline(lm(loan_data$days.with.cr.line ~ loan_data$log.annual.inc), col="red") 
 ```
 
 Finally, the percentage of applicants who have had negative financial records (such as bankruptcies or leins) and had their loan approved or decline can be viewed in the following pie chart:
 ```{r}
 # Seperate the data into values where public record is greater than 0
 neg_record <- subset(loan_data, pub.rec > 0)
-neg_record$credit.policy <- ifelse(neg_record$credit.policy == 0, "Rejected", "Approved") #nolint
+neg_record$credit.policy <- ifelse(neg_record$credit.policy == 0, "Rejected", "Approved") 
 table_data <- table(neg_record$credit.policy)
-pie(table_data, col = c("blue", "red"), main = "Perecentage of Approval/Rejection for Applicants with Negative Financial Record") #nolint
-legend("bottomleft", legend = paste(names(table_data), "(", table_data, ")", sep = ""), fill = c("blue", "red")) #nolint
+pie(table_data, col = c("blue", "red"), main = "Approval vs Rejection with Negative Financial Record") 
+legend("bottomleft", legend = paste(names(table_data), "(", table_data, ")", sep = ""), fill = c("blue", "red")) 
 ```
 According to the chart, there are 407 approvals and 152 rejections when the applicant has a negative financial record. That is a 63% approval rating compared to the total of 80.5% approvals for all applicants.
 
 ## Logistic Regression
-This section will explore logistic regression and analyze the performance of the logisitic regression model.
+This section will explore logistic regression and analyze the performance of the logistic regression model. The model utilizes binomial logistic regression and addresses all other columns as functions of the predictor variable. 
 ```{r}
 set.seed(123)
 logistic_regression <- glm(credit.policy ~ ., data = train, family = "binomial")
@@ -96,9 +114,13 @@ conf_matrix <- table(test$credit.policy, lr_prediction_result)
 conf_matrix
 ```
 Utilizing logistic regression, we've calculated the following:
+
 * True Negative - 234
+
 * False Positive - 127
+
 * False Negative - 61
+
 * True Positive - 1494
 
 The accuracy, precision, recall, and specifcity can be calculated below.
@@ -126,22 +148,26 @@ specificity
 The confusion matrix shows that there is a 90% accuracy in the logistic regression model. The sensitivity of 96% shows that there is a high percent of true positive classifications in the model. The specificity at 64.82% shows that the predictions on True Negative classifications are low in accuracy.
 
 ## kNN Classification Model
-This section will explore classification by using kNN.
+This section will explore classification by using kNN. kNN is based on similarity. It finds the k closest data points to the current object it is attempting to predict, then makes a prediction based on the outcome of the k closest points. The model below only utilizes k = 1, which means it compares data to the closest neighbor.
 
 ```{r}
 library(class)
 library(caret)
 train_no_purpose <- train[,-2]
 test_no_purpose <- test[,-2]
-knn_predictions <- knn(train_no_purpose[, -1], test_no_purpose[, -1], train_no_purpose[, 1], 1) #nolint
-confusion_matrix <- confusionMatrix(knn_predictions, as.factor(test_no_purpose$credit.policy)) #nolint
+knn_predictions <- knn(train_no_purpose[, -1], test_no_purpose[, -1], train_no_purpose[, 1], 1) 
+confusion_matrix <- confusionMatrix(knn_predictions, as.factor(test_no_purpose$credit.policy)) 
 print(confusion_matrix)
 ```
 
 The confusion matrix shows us the following statistics:
+
 * True Negative - 117
+
 * False Positive - 231
+
 * False Negative - 240
+
 * True Positive - 1328
 
 ```{r}
@@ -166,10 +192,10 @@ specificity <- specificity * 100
 specificity
 ```
 
-The data shows us that we have a 75.42% accuracy. While the sensitivity is relatively high at 84.69%, the specificity is low at 33.62%. This suggests that we have a high percentage of True Positive classifications. However, the number of True Negative classifications are extremely low.
+The data shows us that we have a 75.42% accuracy. While the sensitivity is relatively high at 84.69%, the specificity is low at 33.62%. This suggests that we have a high percentage of True Positive classifications. However, the number of True Negative classifications are extremely low. This could be due to the k = 1 utilization. Since there are high percentage of approvals, the True Negative accuracy decreases since the closest k point could be an approval.
 
 ## Decision Trees
-The final model being utilized are Decision Trees. 
+The final model being utilized are Decision Trees. Every child in the tree would be a decision from one of the predictor variables. At the leaf of the tree, a decision is made whether or not there was a loan approval. 
 
 ```{r}
 library(rpart)
@@ -180,9 +206,13 @@ confusionMatrix(table(tree_predictions, test$credit.policy))
 ```
 
 The confusion matrix from the decision tree gives us the following statistics:
+
 * True Negative - 346
+
 * False Positive - 1
+
 * False Negative - 29
+
 * True Positive - 1533
 
 ```{r}
@@ -206,4 +236,37 @@ specificity <- TN / (TN + FP)
 specificity <- specificity * 100
 specificity
 ```
+According to the data, there is a 98.43% accuracy, a 98.14% sensitivity, and a 99.71% specificity. These numbers are significantly higher than the other 2 models and display superior accuracy during prediction.
 
+## Comparisons
+As a breakdown, here are the results of each model again:
+
+**Logistic Regression**
+
+Accuracy: 90.19%
+
+Sensitivity: 96.08%
+
+Specificity: 64.82%
+
+Logistic regression is fairly accurate. However, there is a lower rate of True Negative detection. The reason for these statistics may be that the training data contains a significantly greater amount of positive cases where an applicant was approved for a loan than negative cases. 
+
+**kNN**
+
+Accuracy: 75.42%
+
+Sensitivity: 84.69%
+
+Specificity: 33.62%
+
+The kNN model has an extremely low specificity in which there are a lot less True Negatives being accurately detected. Since the model I used above utilized a k = 1, this means the kNN was only searching for the nearest neighbor of the current node. Since the dataset had significantly more people approved for a loan than denied, the nearest neighbor was most likely approved for a loan. 
+
+**Decision Trees**
+
+Accuracy: 98.43%
+
+Sensitivity: 98.14%
+
+Specificity: 99.71%
+
+The decision tree model was the most accurate of all, with an accuracy rate of 98.43%. Since both sensitivity and specificity were also high, the model had a high overall accuracy. The interactions between each of the predictors were captured accurately by the decision tree and was overall a good model for this dataset. 
